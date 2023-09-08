@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "litheroute_maps",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--dart-define", "PUBLIC_ACCESS_TOKEN=pk.eyJ1IjoiZXJndmVyZGlkYSIsImEiOiJjbGx4ZTdhYW8waTczM2JsZW9sMjJ1aWJhIn0.2HbJTs97Dfs_J7-iOj3_0g"]
+        },
+        {
+            "name": "litheroute_maps (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--dart-define", "PUBLIC_ACCESS_TOKEN=pk.eyJ1IjoiZXJndmVyZGlkYSIsImEiOiJjbGx4ZTdhYW8waTczM2JsZW9sMjJ1aWJhIn0.2HbJTs97Dfs_J7-iOj3_0g"],
+            "flutterMode": "profile"
+        },
+        {
+            "name": "litheroute_maps (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--dart-define", "PUBLIC_ACCESS_TOKEN=pk.eyJ1IjoiZXJndmVyZGlkYSIsImEiOiJjbGx4ZTdhYW8waTczM2JsZW9sMjJ1aWJhIn0.2HbJTs97Dfs_J7-iOj3_0g"],
+            "flutterMode": "release"
+        }
+    ]
+}

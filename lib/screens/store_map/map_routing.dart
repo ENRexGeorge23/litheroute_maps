@@ -1,0 +1,105 @@
+part of 'stores_map.dart';
+
+class _AnnotationClickListener extends OnPointAnnotationClickListener {
+  _StoresMapScreenState mapState;
+  Animation<double>? _animation;
+  AnimationController? _controller;
+  _AnnotationClickListener(this.mapState);
+
+  @override
+  void onPointAnnotationClick(PointAnnotation annotation) async {
+    print("onAnnotationClick, id: ${annotation.id}");
+
+    if (await mapState.mapboxMap!.style.styleSourceExists("source")) {
+      await mapState.mapboxMap?.style.removeStyleLayer("layer");
+      await mapState.mapboxMap?.style.removeStyleSource("source");
+    }
+
+    LocationData locationData = await mapState.location.getLocation();
+
+    final start = Position(locationData.longitude!, locationData.latitude!);
+
+    final waypoints = storePositions; // Pass store positions as waypoints
+
+    try {
+      final coordinates = await fetchOptimizedRoute(
+        start,
+        waypoints,
+        dotenv.env['MAPBOX_ACCESS_TOKEN'].toString(),
+      );
+      _drawRouteLowLevel([coordinates]);
+
+      // Now you will get the optimized route considering all store positions as waypoints.
+    } catch (error) {
+      print('Error fetching or drawing route: $error');
+    }
+  }
+
+  void _drawRouteLowLevel(List<List<Position>> routes) async {
+    for (int i = 0; i < routes.length; i++) {
+      final polyline = routes[i];
+      final line = LineString(coordinates: polyline);
+
+      // Create a unique source ID and layer ID for each route.
+      final sourceId = 'source_$i';
+      final layerId = 'layer_$i';
+
+      final exists =
+          await mapState.mapboxMap?.style.styleSourceExists(sourceId);
+      if (exists != null && exists) {
+        // If source exists, just update it
+        final source = await mapState.mapboxMap?.style.getSource(sourceId);
+        (source as GeoJsonSource).updateGeoJSON(json.encode(line));
+      } else {
+        await mapState.mapboxMap?.style.addSource(GeoJsonSource(
+          id: sourceId,
+          data: json.encode(line),
+          lineMetrics: true,
+        ));
+
+        await mapState.mapboxMap?.style.addLayer(LineLayer(
+          id: layerId,
+          sourceId: sourceId,
+          lineCap: LineCap.ROUND,
+          lineJoin: LineJoin.ROUND,
+          lineBlur: 1.0,
+          lineColor: MyColors.primaryColor.value,
+          lineWidth: 5.0,
+        ));
+      }
+
+      // Query the line layer
+      final lineLayer =
+          await mapState.mapboxMap?.style.getLayer(layerId) as LineLayer;
+
+      // Animate the layer to reveal it from start to end
+      _controller?.stop();
+      _controller = AnimationController(
+          duration: const Duration(seconds: 5), vsync: mapState);
+      _animation = Tween<double>(begin: 0, end: 1.0).animate(_controller!)
+        ..addListener(() async {
+          lineLayer.lineTrimOffset = [_animation?.value, 1.0];
+          mapState.mapboxMap?.style.updateLayer(lineLayer);
+        });
+      _controller?.forward();
+    }
+  }
+
+  void _disposeController() {
+    _controller?.dispose();
+    _animation = null;
+    _controller = null;
+  }
+
+  void _clearRoute() async {
+    for (int i = 0; i < 1; i++) {
+      final sourceId = 'source_$i';
+      final layerId = 'layer_$i';
+
+      if (await mapState.mapboxMap!.style.styleSourceExists(sourceId)) {
+        await mapState.mapboxMap?.style.removeStyleLayer(layerId);
+        await mapState.mapboxMap?.style.removeStyleSource(sourceId);
+      }
+    }
+  }
+}
