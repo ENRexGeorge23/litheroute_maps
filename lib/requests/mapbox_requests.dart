@@ -25,3 +25,21 @@ getDrivingRouteUsingMapbox(Position source, Position destination) async {
     debugPrint(errorMessage);
   }
 }
+
+getOptimizedRouteUsingMapbox(Position start, List<Position> waypoints) async {
+  final coordinates =
+      waypoints.map((waypoint) => "${waypoint.lng},${waypoint.lat}").join(';');
+  String accessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'].toString();
+  String url =
+      "https://api.mapbox.com/optimized-trips/v1/mapbox/driving-traffic/${start.lng},${start.lat};$coordinates?source=first&destination=last&roundtrip=false&overview=full&steps=true&access_token=$accessToken";
+
+  try {
+    _dio.options.contentType = Headers.jsonContentType;
+    final responseData = await _dio.get(url);
+    return (responseData.data);
+  } catch (e) {
+    final errorMessage =
+        DioExceptions.fromDioError(e as DioException).toString();
+    debugPrint(errorMessage);
+  }
+}

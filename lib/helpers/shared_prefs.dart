@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:litheroute_maps/main.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:turf/polyline.dart';
+import 'package:litheroute_maps/main.dart';
 
 class MySharedPref {
   static Future<Position> fetchLocationData() async {
@@ -34,5 +35,37 @@ class MySharedPref {
   Map getGeometryFromSharedPrefs(int index) {
     Map geometry = getDecodedResponseFromSharedPrefs(index)['geometry'];
     return geometry;
+  }
+
+  Map getDecodedOptimizedResponseFromSharedPrefs() {
+    String key = 'optimizedstores--';
+    Map response = json.decode(sharedPreferences.getString(key)!);
+    return response;
+  }
+
+  num getOptimizedDistanceFromSharedPrefs() {
+    num distance = getDecodedOptimizedResponseFromSharedPrefs()['distance'];
+    return distance;
+  }
+
+  num getOptimizedDurationFromSharedPrefs() {
+    num duration = getDecodedOptimizedResponseFromSharedPrefs()['duration'];
+    return duration;
+  }
+
+  List<Map> getOptimizedWaypointsFromSharedPrefs() {
+    List<dynamic> optimizedWaypoint =
+        getDecodedOptimizedResponseFromSharedPrefs()['waypoints'];
+    return List<Map>.from(optimizedWaypoint);
+  }
+
+  List<Position> getOptimizedGeometryFromSharedPrefs() {
+    final geometry = getDecodedOptimizedResponseFromSharedPrefs()['geometry'];
+    return Polyline.decode(geometry)
+        .map((point) => Position(
+              point.lng,
+              point.lat,
+            ))
+        .toList();
   }
 }

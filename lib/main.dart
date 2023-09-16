@@ -25,19 +25,17 @@ class MyApp extends StatelessWidget {
         title: 'Mapbox Flutter',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            useMaterial3: true,
-            primarySwatch: Colors.teal,
-            primaryColor: MyColors.primaryColor,
-            appBarTheme: const AppBarTheme(
-              titleTextStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600),
-              color: MyColors.primaryColor,
-              elevation: 0,
-              iconTheme: IconThemeData(color: Colors.white),
-            )),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          colorSchemeSeed: MyColors.primaryColor,
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            titleTextStyle: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
+            color: MyColors.primaryColor,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.white),
+          ),
+        ),
         home: const Splash(),
         routes: {
           '/splash': (context) => const Splash(),

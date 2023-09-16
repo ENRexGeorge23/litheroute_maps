@@ -9,24 +9,23 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.5
-  # mapbox_gl: ^0.16.0
-  flutter_native_splash: ^2.2.16
   cached_network_image: ^3.2.3
-  shared_preferences: ^2.2.0
-  location: ^5.0.3
-  carousel_slider: ^4.2.1
+  cupertino_icons: ^1.0.5
+  device_preview: ^1.1.0
   dio: ^5.3.2
   flutter_dotenv: ^5.1.0
+  flutter_native_splash: ^2.2.16
+  geolocator: ^10.0.1
+  jumping_dot: ^0.0.6
+  location: ^5.0.3
   mapbox_maps_flutter: ^0.4.4
   permission_handler: ^10.4.3
-  geolocator: ^10.0.1
-
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
+  flutter_lints: ^2.0.3
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
 
 flutter:
 
@@ -37,13 +36,10 @@ flutter:
     - assets/icon/
     - assets/image/
     - assets/config/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
