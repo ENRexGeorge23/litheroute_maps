@@ -50,11 +50,16 @@ class _SplashState extends State<Splash> {
         '-----------> CURRENT LOCATION LNG = ${locationData.longitude}, LAT =${locationData.latitude}');
 
     // Get and store the directions API response in sharedPreferences
-    for (int i = 0; i < stores.length; i++) {
-      Map modifiedResponse = await getDirectionsAPIResponse(
-          Position(locationData.longitude!, locationData.latitude!), i);
-      saveDirectionsAPIResponse(i, json.encode(modifiedResponse));
-    }
+    // for (int i = 0; i < stores.length; i++) {
+    //   Map modifiedResponse = await getDirectionsAPIResponse(
+    //       Position(locationData.longitude!, locationData.latitude!), i);
+    //   saveDirectionsAPIResponse(i, json.encode(modifiedResponse));
+    // }
+    // final start = Position(locationData.longitude!, locationData.latitude!);
+
+    // getOptimizedRouteAPIResponse(start, storePositions).then((jsonResponse) {
+    //   saveOptimizedAPIResponse(json.encode(jsonResponse));
+    // });
 
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const HomeManagement()),

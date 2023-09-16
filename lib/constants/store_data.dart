@@ -2,7 +2,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 List<Map> stores = [
   {
-    'id': '0',
+    'id': '1',
     'name': 'ABY Construction Supply',
     'items': 'Construction Materials, Hardware, Plumbing, Electrical',
     'image': 'https://api.time.com/wp-content/uploads/2016/04/starbucks.jpeg',
@@ -12,18 +12,7 @@ List<Map> stores = [
     },
   },
   {
-    'id': '0',
-    'name': 'Julies Bakeshop',
-    'items': 'Bread, Pastries, Snacks',
-    'image':
-        'https://indiaeducationdiary.in/wp-content/uploads/2020/10/IMG-20201024-WA0014.jpg',
-    'coordinates': {
-      'longitude': '123.9493031084881',
-      'latitude': '10.25239625690999',
-    },
-  },
-  {
-    'id': '0',
+    'id': '2',
     'name': 'Rosekie Drug Store',
     'items': 'Medicines, Vitamins, Supplements, Cosmetics, Toiletries',
     'image':
@@ -34,7 +23,18 @@ List<Map> stores = [
     },
   },
   {
-    'id': '0',
+    'id': '3',
+    'name': 'Julies Bakeshop',
+    'items': 'Bread, Pastries, Snacks',
+    'image':
+        'https://indiaeducationdiary.in/wp-content/uploads/2020/10/IMG-20201024-WA0014.jpg',
+    'coordinates': {
+      'longitude': '123.9493031084881',
+      'latitude': '10.25239625690999',
+    },
+  },
+  {
+    'id': '4',
     'name': 'Gaisano Grand Mall',
     'items': 'Department Store, Groceries, Restaurants',
     'image':
@@ -45,7 +45,7 @@ List<Map> stores = [
     },
   },
   {
-    'id': '0',
+    'id': '5',
     'name': 'Petron Gasoline Station',
     'items': 'Gasoline, Diesel, Convenience Store',
     'image':
@@ -56,7 +56,7 @@ List<Map> stores = [
     },
   },
   {
-    'id': '0',
+    'id': '6',
     'name': 'Gabi Construction Supply',
     'items': 'Sand, Gravel, Construction',
     'image':
@@ -67,7 +67,7 @@ List<Map> stores = [
     },
   },
   {
-    'id': '0',
+    'id': '7',
     'name': 'Agila Resort',
     'items': 'Resort, Swimming Pool, Restaurant',
     'image':
@@ -77,10 +77,21 @@ List<Map> stores = [
       'latitude': '10.25757143846',
     },
   },
+  {
+    'id': '8',
+    'name': 'ACC Barber Shop',
+    'items': 'Hairstyling, Haircut, Salon, Barber',
+    'image':
+        'https://10619-2.s.cdn12.com/rests/small/w550/h367/103_510330142.jpg',
+    'coordinates': {
+      'longitude': '123.95481600018917',
+      'latitude': '10.270485812868444',
+    },
+  },
 ];
 
-List<Position> storePositions = stores.map((restaurant) {
-  double longitude = double.parse(restaurant['coordinates']['longitude']);
-  double latitude = double.parse(restaurant['coordinates']['latitude']);
+List<Position> storePositions = stores.map((store) {
+  double longitude = double.parse(store['coordinates']['longitude']);
+  double latitude = double.parse(store['coordinates']['latitude']);
   return Position(longitude, latitude);
 }).toList();

@@ -63,7 +63,7 @@ const MAPBOX_DIRECTIONS_ENDPOINT =
     "https://api.mapbox.com/directions/v5/mapbox/driving/";
 
 const MAPBOX_OPTIMIZATION_ENDPOINT =
-    "https://api.mapbox.com/optimized-trips/v1/mapbox/driving/";
+    "https://api.mapbox.com/optimized-trips/v1/mapbox/driving-traffic/";
 
 Position createRandomPositionAround(Position myPosition) {
   var random = Random();
@@ -113,7 +113,7 @@ Future<List<Position>> fetchOptimizedRoute(
       waypoints.map((waypoint) => "${waypoint.lng},${waypoint.lat}").join(';');
 
   final uri = Uri.parse(
-      "https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${start.lng},${start.lat};$coordinates?access_token=$accessToken");
+      "$MAPBOX_OPTIMIZATION_ENDPOINT${start.lng},${start.lat};$coordinates?source=first&destination=last&roundtrip=false&overview=full&steps=true&access_token=$accessToken");
 
   try {
     final response = await http.get(uri);
@@ -121,6 +121,7 @@ Future<List<Position>> fetchOptimizedRoute(
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       final geometry = jsonResponse['trips'][0]['geometry'];
+
       return Polyline.decode(geometry)
           .map((point) => Position(
                 point.lng,

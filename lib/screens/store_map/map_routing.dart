@@ -5,10 +5,43 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
   Animation<double>? _animation;
   AnimationController? _controller;
   _AnnotationClickListener(this.mapState);
+  MySharedPref sharedPrefs = MySharedPref();
 
   @override
   void onPointAnnotationClick(PointAnnotation annotation) async {
     print("onAnnotationClick, id: ${annotation.id}");
+
+    List<Map> optimizedWaypoints =
+        sharedPrefs.getOptimizedWaypointsFromSharedPrefs();
+
+    for (int i = 1; i < optimizedWaypoints.length; i++) {
+      final waypoint = optimizedWaypoints[i];
+
+      final int waypointIndex = waypoint['waypoint_index'];
+
+      String waypointIndexString = waypointIndex.toString();
+
+      final ByteData bytes = await rootBundle
+          .load('assets/image/optimize_marker_${waypointIndex - 1}.png');
+      final Uint8List imageData = bytes.buffer.asUint8List();
+
+      PointAnnotation updatedAnnotation = PointAnnotation(
+        id: waypointIndexString,
+        iconSize: 1.3,
+        iconOffset: [0.0, -5.0],
+        symbolSortKey: 10,
+        image: imageData,
+      );
+
+      var newPoint = Point(
+          coordinates: Position(
+        double.parse(waypoint['location'][0].toString()),
+        double.parse(waypoint['location'][1].toString()),
+      ));
+      updatedAnnotation.geometry = newPoint.toJson();
+
+      mapState._pointAnnotationManager?.update(updatedAnnotation);
+    }
 
     if (await mapState.mapboxMap!.style.styleSourceExists("source")) {
       await mapState.mapboxMap?.style.removeStyleLayer("layer");
@@ -18,8 +51,7 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
     LocationData locationData = await mapState.location.getLocation();
 
     final start = Position(locationData.longitude!, locationData.latitude!);
-
-    final waypoints = storePositions; // Pass store positions as waypoints
+    final waypoints = storePositions;
 
     try {
       final coordinates = await fetchOptimizedRoute(
@@ -27,9 +59,7 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
         waypoints,
         dotenv.env['MAPBOX_ACCESS_TOKEN'].toString(),
       );
-      _drawRouteLowLevel([coordinates]);
-
-      // Now you will get the optimized route considering all store positions as waypoints.
+      // _drawRouteLowLevel([coordinates]);
     } catch (error) {
       print('Error fetching or drawing route: $error');
     }
@@ -46,7 +76,7 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
 
       final exists =
           await mapState.mapboxMap?.style.styleSourceExists(sourceId);
-      if (exists != null && exists) {
+      if (exists!) {
         // If source exists, just update it
         final source = await mapState.mapboxMap?.style.getSource(sourceId);
         (source as GeoJsonSource).updateGeoJSON(json.encode(line));

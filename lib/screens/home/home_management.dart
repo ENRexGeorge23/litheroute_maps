@@ -12,8 +12,8 @@ class HomeManagement extends StatefulWidget {
 
 class _HomeManagementState extends State<HomeManagement> {
   final List<Widget> _pages = [
+    const StoreListsScreen(),
     const StoresMapScreen(),
-    const StoreListsScreen()
   ];
   int _index = 0;
 
@@ -21,21 +21,23 @@ class _HomeManagementState extends State<HomeManagement> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_index],
-      bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.white,
+      bottomNavigationBar: NavigationBar(
+        height: 70,
+        shadowColor: Colors.white,
         backgroundColor: MyColors.primaryColor,
-        onTap: (selectedIndex) {
+        onDestinationSelected: (selectedIndex) {
           setState(() {
             _index = selectedIndex;
           });
         },
-        currentIndex: _index,
-        items: const [
-          BottomNavigationBarItem(
+        selectedIndex: _index,
+        destinations: const <NavigationDestination>[
+          NavigationDestination(
+              icon: Icon(Icons.store_outlined),
+              label: 'Store List',
+              selectedIcon: Icon(Icons.store_mall_directory_sharp)),
+          NavigationDestination(
               icon: Icon(Icons.map), label: 'Store Locations'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.store_mall_directory_sharp),
-              label: 'Store List'),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import 'package:litheroute_maps/MyColors.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/shared_prefs.dart';
 import 'package:litheroute_maps/helpers/utils.dart';
+import 'package:litheroute_maps/screens/store_map/widgets/duration_distance_tracker.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
@@ -21,6 +22,7 @@ class StoresMapScreen extends StatefulWidget {
 
 class _StoresMapScreenState extends State<StoresMapScreen>
     with TickerProviderStateMixin {
+  MySharedPref sharedPrefs = MySharedPref();
   // Mapbox related
   Location location = Location();
   final defaultEdgeInsets =
@@ -28,6 +30,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
   String accessToken = const String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
   // Position _currentPosition = Position(0.0, 0.0);
   PointAnnotationManager? _pointAnnotationManager;
+
   Timer? timer;
   bool showAnnotations = true;
   _AnnotationClickListener? annotationClickListener;
@@ -48,13 +51,15 @@ class _StoresMapScreenState extends State<StoresMapScreen>
         pulsingEnabled: true,
       ),
     );
-    LocationData locationData = await location.getLocation();
-    mapboxMap.setCamera(CameraOptions(
-        center: Point(
-                coordinates:
-                    Position(locationData.longitude!, locationData.latitude!))
-            .toJson(),
-        zoom: 15.0));
+    showStoreAnnotations();
+
+    // LocationData locationData = await location.getLocation();
+    // mapboxMap.setCamera(CameraOptions(
+    //     center: Point(
+    //             coordinates:
+    //                 Position(locationData.longitude!, locationData.latitude!))
+    //         .toJson(),
+    //     zoom: 15.0));
   }
 
   // storeAnnotations() async {
@@ -85,7 +90,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
           .map((storePosition) => Point(coordinates: storePosition))
           .toList();
 
-      final ByteData bytes = await rootBundle.load('assets/red_marker.png');
+      final ByteData bytes = await rootBundle.load('assets/store_marker.png');
       final Uint8List imageData = bytes.buffer.asUint8List();
 
       for (int i = 0; i < stores.length; i++) {
@@ -99,6 +104,13 @@ class _StoresMapScreenState extends State<StoresMapScreen>
       }
       _pointAnnotationManager
           ?.addOnPointAnnotationClickListener(_AnnotationClickListener(this));
+
+      try {
+        final coordinates = sharedPrefs.getOptimizedGeometryFromSharedPrefs();
+        annotationClickListener?._drawRouteLowLevel([coordinates]);
+      } catch (error) {
+        debugPrint('Error fetching or drawing route: $error');
+      }
 
       /** For Camera Positioning */
       final List<Point> allCoordinates = [
@@ -136,27 +148,30 @@ class _StoresMapScreenState extends State<StoresMapScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Store Locations'),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 1.0,
-              child: MapWidget(
-                key: const ValueKey("mapWidget"),
-                resourceOptions: ResourceOptions(
-                  accessToken: accessToken,
-                  baseURL: 'https://api.mapbox.com',
-                ),
-                styleUri: MapboxStyles.MAPBOX_STREETS,
-                onMapCreated: _onMapCreated,
-                onStyleLoadedListener: _onStyleLoadedCallback,
+      appBar: AppBar(title: const Text('Store Locations')),
+      body: Stack(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 1.0,
+            child: MapWidget(
+              key: const ValueKey("mapWidget"),
+              resourceOptions: ResourceOptions(
+                accessToken: accessToken,
+                baseURL: 'https://api.mapbox.com',
               ),
+              styleUri: MapboxStyles.MAPBOX_STREETS,
+              onMapCreated: _onMapCreated,
+              onStyleLoadedListener: _onStyleLoadedCallback,
             ),
-          ],
-        ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 10.0),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: DistanceAndDurationTrackerWidget(),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -183,17 +198,19 @@ class _StoresMapScreenState extends State<StoresMapScreen>
           const SizedBox(height: 10),
           FloatingActionButton(
               heroTag: "btn2",
-              foregroundColor: MyColors.textColorOnAccent,
+              foregroundColor: showAnnotations
+                  ? MyColors.textColorOnAccent
+                  : MyColors.onSurfaceColor,
               onPressed: () {
                 setState(() {
                   showAnnotations = !showAnnotations;
                   annotationClickListener?._clearRoute();
-
                   showStoreAnnotations();
                 });
               },
-              backgroundColor:
-                  showAnnotations ? MyColors.primaryColor : Colors.grey,
+              backgroundColor: showAnnotations
+                  ? MyColors.primaryColor
+                  : MyColors.surfaceColor,
               child: const Icon(Icons.store)),
         ],
       ),

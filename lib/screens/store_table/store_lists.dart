@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/directions_handler.dart';
@@ -20,22 +18,20 @@ class StoreListsScreen extends StatefulWidget {
 }
 
 class _StoreListsScreenState extends State<StoreListsScreen> {
-  MySharedPref _sharedPrefs = MySharedPref();
+  final MySharedPref _sharedPrefs = MySharedPref();
 
-  Future<void> _refresh() {
-    initializeLocationAndSave(context);
-    return Future.delayed(const Duration(seconds: 2));
+  Future<void> _refresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return setState(() {
+      _sharedPrefs.getDistanceFromSharedPrefs;
+    });
   }
 
-  void initializeLocationAndSave(context) async {
+  initializeLocationAndSave(context) async {
     Location location = Location();
-
     LocationData locationData = await location.getLocation();
     sharedPreferences.setDouble('longitude', locationData.longitude!);
     sharedPreferences.setDouble('latitude', locationData.latitude!);
-    debugPrint(
-        '-----------> CURRENT LOCATION LNG = ${locationData.longitude}, LAT =${locationData.latitude}');
-
     // Get and store the directions API response in sharedPreferences
     for (int i = 0; i < stores.length; i++) {
       Map modifiedResponse = await getDirectionsAPIResponse(
@@ -48,6 +44,9 @@ class _StoreListsScreenState extends State<StoreListsScreen> {
   void initState() {
     super.initState();
     initializeLocationAndSave(context);
+    setState(() {
+      _sharedPrefs.getDistanceFromSharedPrefs;
+    });
   }
 
   Widget cardButtons(
