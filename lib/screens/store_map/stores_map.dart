@@ -7,7 +7,8 @@ import 'package:litheroute_maps/MyColors.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/shared_prefs.dart';
 import 'package:litheroute_maps/helpers/utils.dart';
-import 'package:litheroute_maps/screens/store_map/widgets/duration_distance_tracker.dart';
+
+import 'package:litheroute_maps/screens/store_map/widgets/map_bottom_sheets.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
@@ -26,13 +27,16 @@ class _StoresMapScreenState extends State<StoresMapScreen>
   // Mapbox related
   Location location = Location();
   final defaultEdgeInsets =
-      MbxEdgeInsets(top: 100, left: 100, bottom: 100, right: 100);
+      MbxEdgeInsets(top: 90, left: 90, bottom: 90, right: 90);
   String accessToken = const String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
   // Position _currentPosition = Position(0.0, 0.0);
   PointAnnotationManager? _pointAnnotationManager;
 
   Timer? timer;
   bool showAnnotations = true;
+
+  final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier<bool>(false);
+
   _AnnotationClickListener? annotationClickListener;
 
   // late MapboxMapController controller;
@@ -40,6 +44,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
 
   _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
+
     this.mapboxMap = mapboxMap
       ..scaleBar.updateSettings(ScaleBarSettings(enabled: false));
     _pointAnnotationManager =
@@ -141,78 +146,100 @@ class _StoresMapScreenState extends State<StoresMapScreen>
     super.dispose();
   }
 
-  // _onMapCreated(MapboxMapController controller) async {
-  //   // this.controller = controller;
-  // }
+  void updateMapSize(bool isExpanded) {
+    setState(() {
+      _isExpandedNotifier.value = isExpanded;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Store Locations')),
+      // appBar: AppBar(title: const Text('Store Locations')),
+
       body: Stack(
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 1.0,
-            child: MapWidget(
-              key: const ValueKey("mapWidget"),
-              resourceOptions: ResourceOptions(
-                accessToken: accessToken,
-                baseURL: 'https://api.mapbox.com',
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 280),
+                height: _isExpandedNotifier.value
+                    ? MediaQuery.of(context).size.height * 0.57
+                    : MediaQuery.of(context).size.height * 0.912,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _isExpandedNotifier,
+                  builder: (context, isExpanded, child) {
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: MapWidget(
+                        key: const ValueKey("mapWidget"),
+                        resourceOptions: ResourceOptions(
+                          accessToken: accessToken,
+                          baseURL: 'https://api.mapbox.com',
+                        ),
+                        styleUri: MapboxStyles.MAPBOX_STREETS,
+                        onMapCreated: _onMapCreated,
+                        onStyleLoadedListener: _onStyleLoadedCallback,
+                      ),
+                    );
+                  },
+                ),
               ),
-              styleUri: MapboxStyles.MAPBOX_STREETS,
-              onMapCreated: _onMapCreated,
-              onStyleLoadedListener: _onStyleLoadedCallback,
-            ),
+            ],
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 10.0),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: DistanceAndDurationTrackerWidget(),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: "btn1",
+                  backgroundColor: MyColors.primaryColor,
+                  foregroundColor: MyColors.textColorOnAccent,
+                  onPressed: () async {
+                    LocationData locationData = await location.getLocation();
+                    mapboxMap?.flyTo(
+                        CameraOptions(
+                          center: Point(
+                            coordinates: Position(locationData.longitude!,
+                                locationData.latitude!),
+                          ).toJson(),
+                          zoom: 15.0,
+                        ),
+                        MapAnimationOptions(duration: 1000, startDelay: 0));
+                  },
+                  child: const Icon(Icons.my_location),
+                ),
+                const SizedBox(height: 2),
+                FloatingActionButton(
+                    mini: true,
+                    heroTag: "btn2",
+                    foregroundColor: showAnnotations
+                        ? MyColors.textColorOnAccent
+                        : MyColors.onSurfaceColor,
+                    onPressed: () {
+                      setState(() {
+                        showAnnotations = !showAnnotations;
+                        annotationClickListener?._clearRoute();
+                        showStoreAnnotations();
+                      });
+                    },
+                    backgroundColor: showAnnotations
+                        ? MyColors.primaryColor
+                        : MyColors.surfaceColor,
+                    child: const Icon(Icons.store)),
+                const SizedBox(height: 100),
+              ],
             ),
           ),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: "btn1",
-            backgroundColor: MyColors.primaryColor,
-            foregroundColor: MyColors.textColorOnAccent,
-            onPressed: () async {
-              LocationData locationData = await location.getLocation();
-              mapboxMap?.flyTo(
-                  CameraOptions(
-                    center: Point(
-                      coordinates: Position(
-                          locationData.longitude!, locationData.latitude!),
-                    ).toJson(),
-                    zoom: 15.0,
-                  ),
-                  MapAnimationOptions(duration: 1000, startDelay: 0));
-            },
-            child: const Icon(Icons.my_location),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-              heroTag: "btn2",
-              foregroundColor: showAnnotations
-                  ? MyColors.textColorOnAccent
-                  : MyColors.onSurfaceColor,
-              onPressed: () {
-                setState(() {
-                  showAnnotations = !showAnnotations;
-                  annotationClickListener?._clearRoute();
-                  showStoreAnnotations();
-                });
-              },
-              backgroundColor: showAnnotations
-                  ? MyColors.primaryColor
-                  : MyColors.surfaceColor,
-              child: const Icon(Icons.store)),
-        ],
+      bottomSheet: MapBottomSheet(
+        isExpandedNotifier: _isExpandedNotifier,
+        updateMapSize: updateMapSize,
       ),
     );
   }

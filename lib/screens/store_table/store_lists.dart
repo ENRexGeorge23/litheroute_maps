@@ -49,29 +49,6 @@ class _StoreListsScreenState extends State<StoreListsScreen> {
     });
   }
 
-  Widget cardButtons(
-      IconData iconData, String label, Map<dynamic, dynamic> storeData) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 25),
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/store-location-map',
-              arguments: storeData);
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(5),
-        ),
-        child: Row(
-          children: [
-            Icon(iconData, size: 20),
-            const SizedBox(width: 5),
-            Text(label)
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,8 +104,12 @@ class _StoreListsScreenState extends State<StoreListsScreen> {
                                 Expanded(
                                   child: Row(
                                     children: [
-                                      cardButtons(Icons.location_on, 'Map',
-                                          stores[index]),
+                                      CardButtons(
+                                        context: context,
+                                        iconData: Icons.location_on,
+                                        label: 'Map',
+                                        storeData: stores[index],
+                                      ),
                                       const Spacer(),
                                       Text(
                                         '${(_sharedPrefs.getDistanceFromSharedPrefs(index) / 1000).toStringAsFixed(2)} km',
@@ -148,6 +129,44 @@ class _StoreListsScreenState extends State<StoreListsScreen> {
             ],
           ),
         )),
+      ),
+    );
+  }
+}
+
+class CardButtons extends StatelessWidget {
+  const CardButtons({
+    super.key,
+    required this.context,
+    required this.iconData,
+    required this.label,
+    required this.storeData,
+  });
+
+  final BuildContext context;
+  final IconData iconData;
+  final String label;
+  final Map storeData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 25),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/store-location-map',
+              arguments: storeData);
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(5),
+        ),
+        child: Row(
+          children: [
+            Icon(iconData, size: 20),
+            const SizedBox(width: 5),
+            Text(label)
+          ],
+        ),
       ),
     );
   }
