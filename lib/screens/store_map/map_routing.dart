@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 part of 'stores_map.dart';
 
 class _AnnotationClickListener extends OnPointAnnotationClickListener {
@@ -27,7 +29,7 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
 
       PointAnnotation updatedAnnotation = PointAnnotation(
         id: waypointIndexString,
-        iconSize: 1.3,
+        iconSize: 1.5,
         iconOffset: [0.0, -5.0],
         symbolSortKey: 10,
         image: imageData,
@@ -38,8 +40,9 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
         double.parse(waypoint['location'][0].toString()),
         double.parse(waypoint['location'][1].toString()),
       ));
-      updatedAnnotation.geometry = newPoint.toJson();
+      mapState._pointAnnotationManager?.setIconAllowOverlap(true);
 
+      updatedAnnotation.geometry = newPoint.toJson();
       mapState._pointAnnotationManager?.update(updatedAnnotation);
     }
 

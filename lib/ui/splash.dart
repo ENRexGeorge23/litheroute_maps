@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/directions_handler.dart';
 import 'package:litheroute_maps/main.dart';
+import 'package:litheroute_maps/screens/store_map/stores_map.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
@@ -62,7 +63,7 @@ class _SplashState extends State<Splash> {
     // });
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomeManagement()),
+      MaterialPageRoute(builder: (_) => const StoresMapScreen()),
       (route) => false,
     );
   }

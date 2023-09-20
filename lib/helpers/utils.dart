@@ -75,8 +75,9 @@ extension AnnotationCreation on PointAnnotationManager {
   addAnnotation(Uint8List imageData, Point position, {String textField = ""}) {
     return create(PointAnnotationOptions(
         geometry: position.toJson(),
+        textMaxWidth: 1.0,
         textField: textField,
-        textOffset: [0.0, -3.0],
+        textOffset: [0.0, -5.0],
         textColor: Colors.red.value,
         iconSize: 1.3,
         iconOffset: [0.0, -5.0],

@@ -7,8 +7,8 @@ List<Map> stores = [
     'items': 'Construction Materials, Hardware, Plumbing, Electrical',
     'image': 'https://api.time.com/wp-content/uploads/2016/04/starbucks.jpeg',
     'coordinates': {
-      'longitude': '123.94820269623392',
-      'latitude': '10.253163766176812',
+      'longitude': '123.94817596073636',
+      'latitude': '10.253196622087373',
     },
   },
   {

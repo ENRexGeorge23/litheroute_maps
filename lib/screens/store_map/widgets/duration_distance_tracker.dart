@@ -80,6 +80,7 @@ class _DistanceAndDurationTrackerWidgetState
     final durationInMinutes =
         sharedPrefs.getOptimizedDurationFromSharedPrefs() / 60;
     final durationInHours = durationInMinutes / 60;
+    final theme = Theme.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,13 +112,9 @@ class _DistanceAndDurationTrackerWidgetState
         //     ],
         //   ),
         // ),
-        Container(
-          width: 230,
+        SizedBox(
+          width: 360,
           height: 53,
-          decoration: const BoxDecoration(
-            color: MyColors.primaryContainerColor,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
           child: isLoading
               ? Center(
                   child: JumpingDots(
@@ -127,106 +124,115 @@ class _DistanceAndDurationTrackerWidgetState
                   animationDuration: const Duration(milliseconds: 200),
                 ))
               : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Card(
-                      elevation: 3,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: MyColors.primaryColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        height: 50,
-                        width: 68,
-                        child: Column(
-                          children: [
-                            Text(
-                              '${stores.length}',
-                              style: const TextStyle(
-                                  color: MyColors.textColorOnAccent,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const Text(
-                              'Stores',
-                              style: TextStyle(
-                                color: MyColors.textColorOnAccent,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
                         ),
                       ),
-                    ),
-                    Card(
-                      elevation: 3,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: MyColors.primaryColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
+                      height: 50,
+                      width: 100,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            '${stores.length}',
+                            style: const TextStyle(
+                                color: MyColors.primaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900),
                           ),
-                        ),
-                        height: 50,
-                        width: 68,
-                        child: Column(
-                          children: [
-                            Text(
-                              durationInMinutes < 60
-                                  ? durationInMinutes.toStringAsFixed(2)
-                                  : durationInHours.toStringAsFixed(
-                                      durationInHours.truncateToDouble() ==
-                                              durationInHours
-                                          ? 0
-                                          : 1),
-                              style: const TextStyle(
-                                  color: MyColors.textColorOnAccent,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                          const Text(
+                            'Deliveries',
+                            style: TextStyle(
+                              color: MyColors.primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                            Text(
-                              durationInMinutes >= 60 ? 'Hours' : 'Minutes',
-                              style: const TextStyle(
-                                color: MyColors.textColorOnAccent,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    Card(
-                      elevation: 3,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: MyColors.primaryColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
+                    const Text(
+                      '•',
+                      style: TextStyle(
+                        color: MyColors.primaryColor,
+                        fontSize: 23,
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      height: 50,
+                      width: 112,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            durationInMinutes < 60
+                                ? durationInMinutes.toStringAsFixed(2)
+                                : durationInHours.toStringAsFixed(
+                                    durationInHours.truncateToDouble() ==
+                                            durationInHours
+                                        ? 0
+                                        : 1),
+                            style: const TextStyle(
+                                color: MyColors.primaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900),
                           ),
-                        ),
-                        height: 50,
-                        width: 68,
-                        child: Column(
-                          children: [
-                            Text(
-                              (sharedPrefs.getOptimizedDistanceFromSharedPrefs() /
-                                      1000)
-                                  .toStringAsFixed(2),
-                              style: const TextStyle(
-                                  color: MyColors.textColorOnAccent,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                          Text(
+                            durationInMinutes >= 60 ? ' Hours' : ' Minutes',
+                            style: const TextStyle(
+                              color: MyColors.primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const Text(
-                              'Kilometers',
-                              style: TextStyle(
-                                  color: MyColors.textColorOnAccent,
-                                  fontSize: 12),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Text(
+                      '•',
+                      style: TextStyle(
+                        color: MyColors.primaryColor,
+                        fontSize: 23,
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
                         ),
+                      ),
+                      height: 50,
+                      width: 112,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            (sharedPrefs.getOptimizedDistanceFromSharedPrefs() /
+                                    1000)
+                                .toStringAsFixed(2),
+                            style: const TextStyle(
+                                color: MyColors.primaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900),
+                          ),
+                          const Text(
+                            'Kilometers',
+                            style: TextStyle(
+                              color: MyColors.primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   ],
