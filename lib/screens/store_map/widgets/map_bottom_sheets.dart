@@ -3,6 +3,8 @@ import 'package:litheroute_maps/MyColors.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/shared_prefs.dart';
 import 'package:litheroute_maps/screens/store_map/widgets/duration_distance_tracker.dart';
+import 'package:litheroute_maps/screens/store_map/widgets/list_of_stores.dart';
+import 'package:litheroute_maps/screens/store_table/store_lists.dart';
 
 class MapBottomSheet extends StatefulWidget {
   final Function(bool) updateMapSize;
@@ -33,28 +35,27 @@ class MapBottomSheetState extends State<MapBottomSheet> {
         child: NotificationListener<DraggableScrollableNotification>(
           onNotification: (DraggableScrollableNotification
               draggableScrollableNotification) {
-            if (draggableScrollableNotification.extent >= 0.495 &&
+            if (draggableScrollableNotification.extent >= 0.485 &&
                 draggableScrollableNotification.extent <= 0.92) {
               setState(() {
                 widget.updateMapSize(_isExpanded);
                 widget.isExpandedNotifier.value = true;
               });
             } else if (draggableScrollableNotification.extent == 0.1155 ||
-                draggableScrollableNotification.extent <= 0.46) {
+                draggableScrollableNotification.extent <= 0.48) {
               setState(() {
                 widget.updateMapSize(_isExpanded);
                 widget.isExpandedNotifier.value = false;
               });
             }
-            print("extent: ${draggableScrollableNotification.extent}");
-            print("isExpandedNotifier: ${widget.isExpandedNotifier.value}");
+
             return true;
           },
           child: DraggableScrollableActuator(
             child: DraggableScrollableSheet(
-              initialChildSize: 0.1155,
+              initialChildSize: 0.50,
               minChildSize: 0.1155,
-              maxChildSize: 0.92,
+              maxChildSize: 0.94,
               expand: _isExpanded,
               builder:
                   (BuildContext context, ScrollController scrollController) {
@@ -80,17 +81,7 @@ class MapBottomSheetState extends State<MapBottomSheet> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount: stores.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return const Placeholder(
-                            fallbackHeight: 100,
-                            color: Colors.transparent,
-                          );
-                        },
-                      ),
+                      child: ListOfStores(sharedPrefs: _sharedPrefs),
                     ),
                   ],
                 );
