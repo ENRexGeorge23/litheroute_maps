@@ -13,59 +13,21 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
   void onPointAnnotationClick(PointAnnotation annotation) async {
     print("onAnnotationClick, id: ${annotation.id}");
 
-    List<Map> optimizedWaypoints =
-        sharedPrefs.getOptimizedWaypointsFromSharedPrefs();
+    // updateWaypointAnnotation();
+    // LocationData locationData = await mapState.location.getLocation();
+    // final start = Position(locationData.longitude!, locationData.latitude!);
+    // final waypoints = storePositions;
 
-    for (int i = 1; i < optimizedWaypoints.length; i++) {
-      final waypoint = optimizedWaypoints[i];
-
-      final int waypointIndex = waypoint['waypoint_index'];
-
-      String waypointIndexString = waypointIndex.toString();
-
-      final ByteData bytes = await rootBundle
-          .load('assets/image/optimize_marker_${waypointIndex - 1}.png');
-      final Uint8List imageData = bytes.buffer.asUint8List();
-
-      PointAnnotation updatedAnnotation = PointAnnotation(
-        id: waypointIndexString,
-        iconSize: 1.5,
-        iconOffset: [0.0, -5.0],
-        symbolSortKey: 10,
-        image: imageData,
-      );
-
-      var newPoint = Point(
-          coordinates: Position(
-        double.parse(waypoint['location'][0].toString()),
-        double.parse(waypoint['location'][1].toString()),
-      ));
-      mapState._pointAnnotationManager?.setIconAllowOverlap(true);
-
-      updatedAnnotation.geometry = newPoint.toJson();
-      mapState._pointAnnotationManager?.update(updatedAnnotation);
-    }
-
-    if (await mapState.mapboxMap!.style.styleSourceExists("source")) {
-      await mapState.mapboxMap?.style.removeStyleLayer("layer");
-      await mapState.mapboxMap?.style.removeStyleSource("source");
-    }
-
-    LocationData locationData = await mapState.location.getLocation();
-
-    final start = Position(locationData.longitude!, locationData.latitude!);
-    final waypoints = storePositions;
-
-    try {
-      final coordinates = await fetchOptimizedRoute(
-        start,
-        waypoints,
-        dotenv.env['MAPBOX_ACCESS_TOKEN'].toString(),
-      );
-      // _drawRouteLowLevel([coordinates]);
-    } catch (error) {
-      print('Error fetching or drawing route: $error');
-    }
+    // try {
+    //   final coordinates = await fetchOptimizedRoute(
+    //     start,
+    //     waypoints,
+    //     dotenv.env['MAPBOX_ACCESS_TOKEN'].toString(),
+    //   );
+    //   _drawRouteLowLevel([coordinates]);
+    // } catch (error) {
+    //   print('Error fetching or drawing route: $error');
+    // }
   }
 
   void _drawRouteLowLevel(List<List<Position>> routes) async {
@@ -133,6 +95,52 @@ class _AnnotationClickListener extends OnPointAnnotationClickListener {
         await mapState.mapboxMap?.style.removeStyleLayer(layerId);
         await mapState.mapboxMap?.style.removeStyleSource(sourceId);
       }
+    }
+  }
+
+  void updateWaypointAnnotation() async {
+    List<Map> optimizedWaypoints =
+        sharedPrefs.getOptimizedWaypointsFromSharedPrefs();
+
+    for (int i = 1; i < optimizedWaypoints.length; i++) {
+      final waypoint = optimizedWaypoints[i];
+      final int waypointIndex = waypoint['waypoint_index'];
+      String waypointIndexString = waypointIndex.toString();
+
+      final ByteData bytes = await rootBundle
+          .load('assets/image/optimize_marker_${waypointIndex - 1}.png');
+      final Uint8List imageData = bytes.buffer.asUint8List();
+
+      PointAnnotation updatedAnnotation = PointAnnotation(
+        id: waypointIndexString,
+        iconSize: 1.5,
+        iconOffset: [0.0, -5.0],
+        symbolSortKey: 10,
+        image: imageData,
+      );
+
+      var newPoint = Point(
+        coordinates: Position(
+          double.parse(waypoint['location'][0].toString()),
+          double.parse(waypoint['location'][1].toString()),
+        ),
+      );
+
+      updatedAnnotation.geometry = newPoint.toJson();
+      mapState._pointAnnotationManager?.update(updatedAnnotation);
+    }
+  }
+
+  void optimizationRoute() async {
+    LocationData locationData = await mapState.location.getLocation();
+    final start = Position(locationData.longitude!, locationData.latitude!);
+    final waypoints = storePositions;
+    try {
+      final coordinates = sharedPrefs.getOptimizedGeometryFromSharedPrefs();
+      _drawRouteLowLevel([coordinates]);
+      updateWaypointAnnotation();
+    } catch (error) {
+      print('Error fetching or drawing route: $error');
     }
   }
 }

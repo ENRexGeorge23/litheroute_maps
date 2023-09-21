@@ -24,10 +24,11 @@ class StoresMapScreen extends StatefulWidget {
 class _StoresMapScreenState extends State<StoresMapScreen>
     with TickerProviderStateMixin {
   MySharedPref sharedPrefs = MySharedPref();
+
   // Mapbox related
   Location location = Location();
   final defaultEdgeInsets =
-      MbxEdgeInsets(top: 90, left: 90, bottom: 90, right: 90);
+      MbxEdgeInsets(top: 200, left: 200, bottom: 200, right: 200);
   String accessToken = const String.fromEnvironment("PUBLIC_ACCESS_TOKEN");
   // Position _currentPosition = Position(0.0, 0.0);
   PointAnnotationManager? _pointAnnotationManager;
@@ -35,7 +36,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
   Timer? timer;
   bool showAnnotations = true;
 
-  final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier<bool>(true);
 
   _AnnotationClickListener? annotationClickListener;
 
@@ -46,7 +47,9 @@ class _StoresMapScreenState extends State<StoresMapScreen>
     this.mapboxMap = mapboxMap;
 
     this.mapboxMap = mapboxMap
-      ..scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+      ..scaleBar.updateSettings(ScaleBarSettings(enabled: false))
+      ..compass.updateSettings(CompassSettings(enabled: false));
+
     _pointAnnotationManager =
         await mapboxMap.annotations.createPointAnnotationManager();
 
@@ -104,18 +107,17 @@ class _StoresMapScreenState extends State<StoresMapScreen>
         _pointAnnotationManager?.addAnnotation(
           imageData,
           coordinate,
-          // textField: name,
         );
       }
       _pointAnnotationManager
           ?.addOnPointAnnotationClickListener(_AnnotationClickListener(this));
 
-      try {
-        final coordinates = sharedPrefs.getOptimizedGeometryFromSharedPrefs();
-        annotationClickListener?._drawRouteLowLevel([coordinates]);
-      } catch (error) {
-        debugPrint('Error fetching or drawing route: $error');
-      }
+      // try {
+      //   final coordinates = sharedPrefs.getOptimizedGeometryFromSharedPrefs();
+      //   annotationClickListener?._drawRouteLowLevel([coordinates]);
+      // } catch (error) {
+      //   debugPrint('Error fetching or drawing route: $error');
+      // }
 
       /** For Camera Positioning */
       final List<Point> allCoordinates = [
@@ -130,7 +132,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
       );
       mapboxMap?.flyTo(camera!, null);
     } else {
-      _pointAnnotationManager!.deleteAll();
+      _pointAnnotationManager?.deleteAll();
     }
   }
 
@@ -159,40 +161,34 @@ class _StoresMapScreenState extends State<StoresMapScreen>
 
       body: Stack(
         children: [
-          Column(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 280),
-                height: _isExpandedNotifier.value
-                    ? MediaQuery.of(context).size.height * 0.57
-                    : MediaQuery.of(context).size.height * 0.912,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _isExpandedNotifier,
-                  builder: (context, isExpanded, child) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: MapWidget(
-                        key: const ValueKey("mapWidget"),
-                        resourceOptions: ResourceOptions(
-                          accessToken: accessToken,
-                          baseURL: 'https://api.mapbox.com',
-                        ),
-                        styleUri: MapboxStyles.MAPBOX_STREETS,
-                        onMapCreated: _onMapCreated,
-                        onStyleLoadedListener: _onStyleLoadedCallback,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 280),
+            height: _isExpandedNotifier.value
+                ? MediaQuery.of(context).size.height * 0.55
+                : MediaQuery.of(context).size.height * 0.912,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _isExpandedNotifier,
+              builder: (context, isExpanded, child) {
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: MapWidget(
+                    key: const ValueKey("mapWidget"),
+                    resourceOptions: ResourceOptions(
+                      accessToken: accessToken,
+                      baseURL: 'https://api.mapbox.com',
+                    ),
+                    styleUri: MapboxStyles.MAPBOX_STREETS,
+                    onMapCreated: _onMapCreated,
+                    onStyleLoadedListener: _onStyleLoadedCallback,
+                  ),
+                );
+              },
+            ),
           ),
           Positioned(
-            bottom: 10,
+            top: 50,
             right: 10,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 FloatingActionButton(
                   mini: true,
@@ -223,6 +219,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                     onPressed: () {
                       setState(() {
                         showAnnotations = !showAnnotations;
+                        annotationClickListener?.updateWaypointAnnotation();
                         annotationClickListener?._clearRoute();
                         showStoreAnnotations();
                       });
@@ -231,7 +228,25 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                         ? MyColors.primaryColor
                         : MyColors.surfaceColor,
                     child: const Icon(Icons.store)),
-                const SizedBox(height: 100),
+                const SizedBox(height: 2),
+                FloatingActionButton(
+                    mini: true,
+                    heroTag: "btn3",
+                    foregroundColor: showAnnotations
+                        ? MyColors.textColorOnAccent
+                        : MyColors.onSurfaceColor,
+                    onPressed: showAnnotations
+                        ? () {
+                            setState(() {
+                              annotationClickListener?.optimizationRoute();
+                            });
+                          }
+                        : null,
+                    backgroundColor: showAnnotations
+                        ? MyColors.primaryColor
+                        : MyColors.surfaceColor,
+                    child: const Icon(Icons.alt_route)),
+                const SizedBox(height: 50),
               ],
             ),
           ),
@@ -245,7 +260,6 @@ class _StoresMapScreenState extends State<StoresMapScreen>
   }
 
   _onStyleLoadedCallback(StyleLoadedEventData data) {
-    // storeAnnotations();
     showStoreAnnotations();
   }
 }
