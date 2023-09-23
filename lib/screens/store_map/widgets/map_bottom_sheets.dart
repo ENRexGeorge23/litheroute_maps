@@ -23,6 +23,7 @@ class MapBottomSheetState extends State<MapBottomSheet> {
   final bool _isExpanded = false;
   final MySharedPref _sharedPrefs = MySharedPref();
   ValueNotifier<bool> isExpandedNotifier = ValueNotifier<bool>(false);
+  ValueNotifier<bool> showButton = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,10 @@ class MapBottomSheetState extends State<MapBottomSheet> {
               setState(() {
                 widget.updateMapSize(_isExpanded);
                 widget.isExpandedNotifier.value = false;
+              });
+            } else if (draggableScrollableNotification.extent == 0.70) {
+              setState(() {
+                showButton.value = true;
               });
             }
 
@@ -81,7 +86,18 @@ class MapBottomSheetState extends State<MapBottomSheet> {
                       ),
                     ),
                     Expanded(
+                      flex: 14,
                       child: ListOfStores(sharedPrefs: _sharedPrefs),
+                    ),
+                    Visibility(
+                      visible: widget.isExpandedNotifier.value,
+                      child: SizedBox(
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.check),
+                          label: const Text('Mark route as completed'),
+                        ),
+                      ),
                     ),
                   ],
                 );

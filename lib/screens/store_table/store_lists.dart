@@ -150,23 +150,20 @@ class CardButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 25),
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/store-location-map',
-              arguments: storeData);
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(5),
-        ),
-        child: Row(
-          children: [
-            Icon(iconData, size: 20),
-            const SizedBox(width: 5),
-            Text(label)
-          ],
-        ),
+    return TextButton(
+      onPressed: () {
+        Navigator.pushNamed(context, '/store-location-map',
+            arguments: storeData);
+      },
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(7),
+      ),
+      child: Row(
+        children: [
+          Icon(iconData, size: 20),
+          const SizedBox(width: 3),
+          Text(label)
+        ],
       ),
     );
   }

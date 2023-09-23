@@ -218,7 +218,6 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                         : MyColors.onSurfaceColor,
                     onPressed: () {
                       setState(() {
-                        showAnnotations = !showAnnotations;
                         annotationClickListener?.updateWaypointAnnotation();
                         annotationClickListener?._clearRoute();
                         showStoreAnnotations();
