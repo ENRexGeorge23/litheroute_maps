@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:litheroute_maps/MyColors.dart';
+import 'package:litheroute_maps/screens/store_details/store_details.dart';
 import 'package:litheroute_maps/screens/store_table/store_lists.dart';
 import 'package:litheroute_maps/screens/store_location/store_location_map.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/splash': (context) => const Splash(),
           '/store-lists': (context) => const StoreListsScreen(),
+          '/store-details': (context) => const IndividualStoreDetails(),
           '/store-location-map': (context) => const StoreLocationMapScreen(),
         });
   }

@@ -7,21 +7,22 @@ environment:
   sdk: '>=3.1.0 <4.0.0'
 
 dependencies:
-  flutter:
-    sdk: flutter
   cached_network_image: ^3.2.3
   cupertino_icons: ^1.0.5
   device_preview: ^1.1.0
   dio: ^5.3.2
+  flutter:
+    sdk: flutter
   flutter_dotenv: ^5.1.0
   flutter_native_splash: ^2.2.16
   geolocator: ^10.0.1
+  intl: ^0.18.1
   jumping_dot: ^0.0.6
   location: ^5.0.3
   mapbox_maps_flutter: ^0.4.4
+  material_design_icons_flutter: ^7.0.7296
   permission_handler: ^10.4.3
   shared_preferences: ^2.2.0
- 
 
 dev_dependencies:
   flutter_lints: ^2.0.3
