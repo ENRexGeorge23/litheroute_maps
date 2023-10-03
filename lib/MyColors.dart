@@ -21,7 +21,7 @@ class MyColors {
 
   static const Color scaffoldBackgroundColor = Color(0xfffffbff);
   static const Color onScaffoldBackgroundColor = Color(0xff1f1a1c);
-  static const Color surfaceColor = Color(0xfffffbff);
+  static const Color surfaceColor = Color(0xFFFFFBFF);
   static const Color onSurfaceColor = Color(0xff1f1a1c);
 
   static const Color surfaceVariant = Color(0xFFF0DEE5);
@@ -29,17 +29,6 @@ class MyColors {
 
   static const Color textColorOnAccent = Colors.white;
   static const Color accentLightColor = Colors.grey;
-
-  static Color primaryTextColor = Colors.black;
-  static const Color accentColor = Color(0xff03A685);
-  static Color textOnToolbarColor = Colors.black;
-  static Color toolbarColor = Colors.black;
-
-  static Color baseDarkTextColor = Colors.white;
-  static Color cardColor = Colors.white;
-  static Color selectedColor = Colors.white;
-  static Color unSelectedColor = Colors.white;
-  static Color backgroundColor = const Color(0xff03A685);
 
 /*0xff50A186*/
 }

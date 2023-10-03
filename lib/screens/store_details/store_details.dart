@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hand_signature/signature.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:litheroute_maps/MyColors.dart';
 import 'package:litheroute_maps/constants/store_data.dart';
 import 'package:litheroute_maps/helpers/shared_prefs.dart';
@@ -11,12 +13,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class IndividualStoreDetails extends StatefulWidget {
   static const String routeName = "/store-details";
 
-  // final Function(bool) updateMapSize;
-  // final ValueNotifier<bool> isExpandedNotifier;
   const IndividualStoreDetails({
     super.key,
-    // required this.updateMapSize,
-    // required this.isExpandedNotifier,
   });
 
   @override
@@ -24,10 +22,13 @@ class IndividualStoreDetails extends StatefulWidget {
 }
 
 class IndividualStoreDetailsState extends State<IndividualStoreDetails> {
-  final bool _isExpanded = false;
-  final MySharedPref _sharedPrefs = MySharedPref();
   TextEditingController notesController = TextEditingController();
   String savedNotes = '';
+  HandSignatureControl control = HandSignatureControl(
+    threshold: 0.01,
+    smoothRatio: 0.65,
+    velocityRange: 2.0,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +36,11 @@ class IndividualStoreDetailsState extends State<IndividualStoreDetails> {
         ModalRoute.of(context)!.settings.arguments as Map<dynamic, dynamic>;
     return Scaffold(
       appBar: AppBar(
+        title: const Text(
+          'Proof of Delivery',
+          style: TextStyle(color: MyColors.primaryColor),
+        ),
         iconTheme: const IconThemeData(color: MyColors.primaryColor),
-        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
             iconSize: 32,
@@ -50,56 +54,62 @@ class IndividualStoreDetailsState extends State<IndividualStoreDetails> {
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
-        child: DraggableScrollableActuator(
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.50,
-            minChildSize: 0.1155,
-            maxChildSize: 0.94,
-            expand: _isExpanded,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Column(
+        child: Column(
+          children: [
+            const Divider(
+              height: 3,
+            ),
+            Text(
+              storeData['name'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const StatusButtons(),
+            const SizedBox(
+              height: 40,
+            ),
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
                 children: [
-                  const Divider(
-                    height: 3,
-                  ),
-                  Text(
-                    storeData['name'],
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 30),
+                  ListTile(
+                    title: savedNotes.isNotEmpty
+                        ? Text(savedNotes)
+                        : const Text(
+                            'Add Notes',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                    leading: const Icon(Icons.description),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      _showAddNotesDialog();
+                    },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  const StatusButtons(),
-                  const SizedBox(
-                    height: 40,
+                  ListTile(
+                    title: const Text('Customer Signature'),
+                    leading: Icon(MdiIcons.pen),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      _showCustomerSignatureDialog();
+                    },
                   ),
-                  Expanded(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        ListTile(
-                          title: savedNotes.isNotEmpty
-                              ? Text(savedNotes)
-                              : const Text(
-                                  'Add Notes',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                          leading: const Icon(Icons.description),
-                          trailing: const Icon(Icons.arrow_forward_ios),
-                          onTap: () {
-                            _showAddNotesDialog();
-                          },
-                        ),
-                      ],
-                    ),
-                  )
-
-                  // TODO: implement Add Notes
+                  ListTile(
+                    title: const Text('Capture Picture'),
+                    leading: Icon(MdiIcons.camera),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => _pickImage(ImageSource.camera),
+                  ),
                 ],
-              );
-            },
-          ),
+              ),
+            )
+
+            // TODO: implement Add Notes
+          ],
         ),
       ),
     );
@@ -114,7 +124,7 @@ class IndividualStoreDetailsState extends State<IndividualStoreDetails> {
           title: const Text('Add Notes'),
           content: TextField(
             controller: notesController,
-            maxLines: 6,
+            maxLines: 3,
             decoration: const InputDecoration(
               hintText: 'Enter your notes here',
             ),
@@ -140,6 +150,55 @@ class IndividualStoreDetailsState extends State<IndividualStoreDetails> {
         );
       },
     );
+  }
+
+  void _showCustomerSignatureDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog.fullscreen(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 720,
+                width: 720,
+                child: HandSignature(
+                  control: control,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        control.clear();
+                      });
+                    },
+                    child: const Text("Reset Signature"),
+                  ),
+                  FilledButton(
+                      onPressed: () {}, child: const Text("Confirm Signature"))
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {});
+    }
   }
 
   @override

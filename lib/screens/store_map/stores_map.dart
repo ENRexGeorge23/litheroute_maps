@@ -193,8 +193,6 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                 FloatingActionButton(
                   mini: true,
                   heroTag: "btn1",
-                  backgroundColor: MyColors.primaryColor,
-                  foregroundColor: MyColors.textColorOnAccent,
                   onPressed: () async {
                     LocationData locationData = await location.getLocation();
                     mapboxMap?.flyTo(
@@ -214,7 +212,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                     mini: true,
                     heroTag: "btn2",
                     foregroundColor: showAnnotations
-                        ? MyColors.textColorOnAccent
+                        ? MyColors.onPrimaryContainerColor
                         : MyColors.onSurfaceColor,
                     onPressed: () {
                       setState(() {
@@ -224,7 +222,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                       });
                     },
                     backgroundColor: showAnnotations
-                        ? MyColors.primaryColor
+                        ? MyColors.primaryContainerColor
                         : MyColors.surfaceColor,
                     child: const Icon(Icons.store)),
                 const SizedBox(height: 2),
@@ -232,7 +230,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                     mini: true,
                     heroTag: "btn3",
                     foregroundColor: showAnnotations
-                        ? MyColors.textColorOnAccent
+                        ? MyColors.onPrimaryContainerColor
                         : MyColors.onSurfaceColor,
                     onPressed: showAnnotations
                         ? () {
@@ -242,7 +240,7 @@ class _StoresMapScreenState extends State<StoresMapScreen>
                           }
                         : null,
                     backgroundColor: showAnnotations
-                        ? MyColors.primaryColor
+                        ? MyColors.primaryContainerColor
                         : MyColors.surfaceColor,
                     child: const Icon(Icons.alt_route)),
                 const SizedBox(height: 50),
