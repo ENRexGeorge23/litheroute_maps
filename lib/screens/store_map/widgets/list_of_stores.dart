@@ -26,6 +26,7 @@ class ListOfStores extends StatelessWidget {
                 arguments: storeData);
           },
           child: Card(
+            key: ValueKey(stores[index]['id']),
             elevation: 1,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

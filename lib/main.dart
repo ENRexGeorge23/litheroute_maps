@@ -30,10 +30,8 @@ class MyApp extends StatelessWidget {
           colorSchemeSeed: MyColors.primaryColor,
           useMaterial3: true,
           appBarTheme: const AppBarTheme(
-            titleTextStyle: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
-            color: MyColors.primaryColor,
-            elevation: 0,
+            titleTextStyle:
+                TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
             iconTheme: IconThemeData(color: Colors.white),
           ),
         ),
